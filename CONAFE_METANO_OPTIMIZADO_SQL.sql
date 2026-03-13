@@ -9,26 +9,45 @@
 -- El orden de ejecución es de arriba a abajo, paso a paso.
 -- Los comentarios empiezan con -- (una línea) o /* ... */ (bloque).
 --
--- CONCEPTOS CLAVE:
+-- KEY CONCEPTS:
 --   SELECT   → elegir columnas  (equivale a select() en dplyr)
 --   FROM     → de qué tabla     (equivale al nombre del data.frame)
 --   WHERE    → filtrar filas    (equivale a filter())
 --   JOIN     → unir tablas      (equivale a left_join(), inner_join()...)
 --   GROUP BY → agrupar          (equivale a group_by())
---   WITH     → tabla temporal dentro de la consulta (equivale a objeto intermedio en R)
+--   WITH    → tabla temporal dentro de la consulta (equivale a objeto intermedio en R)
 -- =============================================================================
 
 
 -- =============================================================================
--- PASO 1: CREAR LAS TABLAS BASE
+-- PAST 1: CREAR LAS TABLAS BASE
 -- =============================================================================
 -- En R los datos se leen desde archivos. En SQL primero hay que definir
 -- las tablas donde vivirán esos datos. Aquí se asume que ya fueron cargadas
--- (por ejemplo, con DuckDB puedes hacer:
---   CREATE TABLE sniffer_raw AS SELECT * FROM read_csv('archivo.txt') )
+-- ( example, con DuckDB puedes hacer:
+--   CREATE TABLE  AS 
+SELECT * FROM read_csv_autosniffer_raw(
+    'C:/Users/Ester/Documents/relivestock/nuevos_metano/nuevos_metano_output/*.txt',
+    filename = true,
+    union_by_name = true
+);
+
+SELECT COUNT(*) FROM sniffer_raw;
+SELECT * FROM sniffer_raw LIMIT 3;
 
 -- Tabla con los datos crudos del sniffer (uno por medición)
--- Equivale a: base_resultado <- ejecutar_pipeline()
+-- Equivale a: b
+SELECT * FROM read_csv_auto(
+    'C:/Users/Ester/Documents/relivestock/nuevos_metano/CONTROLES/*.csv',
+    delim = ';',
+    filename = true,
+    union_by_name = true,
+    ignore_errors = true,
+    strict_mode = false
+);
+SELECT COUNT(*) FROM control_raw;
+SELECT * FROM control_raw LIMIT 3;
+ -- If it doesn't exist, create it :
 CREATE TABLE IF NOT EXISTS sniffer_raw (
     CIB          TEXT,
     date         TEXT,
@@ -71,13 +90,16 @@ CREATE TABLE IF NOT EXISTS control_lechero (
 
 -- Tabla del pedigrí
 -- Equivale a: ped_conafe <- read.table(...)
-CREATE TABLE IF NOT EXISTS pedigri (
-    numero      TEXT PRIMARY KEY,
-    sire        TEXT,
-    dam         TEXT,
-    birth_date  DATE,
-    country     TEXT
+SELECT * FROM read_csv_auto(
+    'C:/Users/Ester/Documents/relivestock/nuevos_metano/pedigri/nuevo_pedigri_nuevosmetano.txt',
+    delim = ' ',
+    header = false,
+    union_by_name = true,
+    ignore_errors = true
 );
+
+SELECT COUNT(*) FROM pedigri_raw;
+SELECT * FROM pedigri_raw LIMIT 3;
 
 -- Tabla maestra final (donde se acumula todo)
 -- Equivale a: base_datos_final.rds
