@@ -1,6 +1,6 @@
 -- =============================================================================
--- PIPELINE METANO — Traducción a SQL
--- Compatible con: DuckDB / PostgreSQL / SQLite (con pequeñas diferencias)
+-- PIPELINE METHANE —  SQL
+-- Compatible with: DuckDB / PostgreSQL / SQLite (small differences)
 -- =============================================================================
 --
 -- QUÉ ES SQL Y CÓMO LEERLO:
